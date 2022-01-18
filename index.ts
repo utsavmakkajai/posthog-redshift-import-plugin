@@ -180,15 +180,13 @@ const importAndIngestEvents = async (
         meta.config.tableName
     )} 
     ORDER BY ${sanitizeSqlIdentifier( config.orderByColumn)}
-    OFFSET ($1) LIMIT ${EVENTS_PER_BATCH}`
-
-    console.log(query)
+    OFFSET ${offset} LIMIT ${EVENTS_PER_BATCH}`
     
     const values = [offset]
     
     console.log(values)
 
-    const queryResponse = await executeQuery(query, values, config)
+    const queryResponse = await executeQuery(query, [], config)
 
     if (!queryResponse || queryResponse.error || !queryResponse.queryResult) {
         const nextRetrySeconds = 2 ** payload.retriesPerformedSoFar * 3
