@@ -180,9 +180,13 @@ const importAndIngestEvents = async (
         meta.config.tableName
     )} 
     ORDER BY ${sanitizeSqlIdentifier( config.orderByColumn)}
-    OFFSET ${offset} LIMIT ${EVENTS_PER_BATCH}`
+    OFFSET $1 LIMIT ${EVENTS_PER_BATCH}`
 
+    console.log(query)
+    
     const values = [offset]
+    
+    console.log(values)
 
     const queryResponse = await executeQuery(query, values, config)
 
@@ -194,9 +198,10 @@ const importAndIngestEvents = async (
             }. Retrying in ${nextRetrySeconds}. Error: ${queryResponse.error}`
         )
         await jobs
-            .importAndIngestEvents({ ...payload, retriesPerformedSoFar: payload.retriesPerformedSoFar + 1 })
-            .runIn(nextRetrySeconds, 'seconds')
+        .importAndIngestEvents({ ...payload, retriesPerformedSoFar: payload.retriesPerformedSoFar + 1 })
+        .runIn(nextRetrySeconds, 'seconds')
     }
+    console.log('We reached here line 204')
 
     const eventsToIngest: TransformedPluginEvent[] = []
 
