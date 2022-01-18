@@ -180,7 +180,7 @@ const importAndIngestEvents = async (
         meta.config.tableName
     )} 
     ORDER BY ${sanitizeSqlIdentifier( config.orderByColumn)}
-    OFFSET ${offset} LIMIT ${EVENTS_PER_BATCH}`
+    OFFSET ($1) LIMIT ${EVENTS_PER_BATCH}`
 
     console.log(query)
     
@@ -206,6 +206,7 @@ const importAndIngestEvents = async (
     const eventsToIngest: TransformedPluginEvent[] = []
 
     for (const row of queryResponse.queryResult!.rows) {
+        console.log(`Starting transformation for ${offset}-${offset + EVENTS_PER_BATCH}`)
         const event = await transformations[config.transformationName].transform(row, meta)
         eventsToIngest.push(event)
     }
@@ -263,6 +264,8 @@ const transformations: TransformationsMap = {
                 event: '',
                 properties: {} as Record<string, any> 
             }
+            
+            console.log(row)
 
             for (const [colName, colValue] of Object.entries(row)) {
                 if (!rowToEventMap[colName]) {
