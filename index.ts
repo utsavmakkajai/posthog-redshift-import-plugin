@@ -180,7 +180,7 @@ const importAndIngestEvents = async (
         meta.config.tableName
     )} 
     ORDER BY ${sanitizeSqlIdentifier( config.orderByColumn)}
-    OFFSET $1 LIMIT ${EVENTS_PER_BATCH}`
+    OFFSET ${offset} LIMIT ${EVENTS_PER_BATCH}`
 
     console.log(query)
     
